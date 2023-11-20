@@ -1,18 +1,26 @@
-## Getting Started
+## Organizador de Tarefas
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Descrição
+O TaskOrganizer é um aplicativo de desktop desenvolvido em Java e JavaFX por Rhuan Cruz eLuiz Furlanis como parte de um projeto acadêmico na faculdade. Este aplicativo tem como objetivo ajudar os usuários a organizar suas tarefas de forma eficiente, proporcionando uma interface intuitiva e fácil de usar.
 
-## Folder Structure
+## Funcionalidades Principais
 
-The workspace contains two folders by default, where:
+## 1. Adicionar Tarefas
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+Os usuários podem adicionar facilmente novas tarefas, atribuindo detalhes como título, descrição e prazo.
+## 2. Visualização de Tarefas
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+As tarefas são exibidas de forma clara e organizada, permitindo que os usuários vejam suas atividades pendentes de maneira fácil e rápida
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## 3. Marcar Tarefas Concluídas
+Os usuários têm a capacidade de marcar as tarefas como concluídas, proporcionando uma maneira eficiente de acompanhar o progresso.
 
-## Dependency Management
+## 4. Priorização
+As tarefas podem ser priorizadas para ajudar os usuários a se concentrarem nas atividades mais importantes.
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## 5. Editar e Excluir Tarefas
+Os usuários podem editar informações de tarefas existentes ou excluir tarefas que não são mais relevantes.
+
+## Requisitos de Sistema
+Java 8 ou superior instalado.
+Ambiente de execução JavaFX.
