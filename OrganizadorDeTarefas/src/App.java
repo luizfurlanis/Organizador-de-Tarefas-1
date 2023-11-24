@@ -4,15 +4,22 @@ import java.util.ArrayList;
 import entidades.ListadeTarefas;
 import entidades.Tarefa;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -23,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.control.CheckBox;
 
 public class App extends Application{
     //private static Stage stage = null;
@@ -30,7 +38,12 @@ public class App extends Application{
     private boolean prioridade = false; 
     private boolean prioridadeLista = false;
     private ArrayList<ListadeTarefas> visualizacao = new ArrayList<>();
+    ContextMenu contextMenuTarefas = new ContextMenu();
+    MenuItem deletarItem = new MenuItem("Excluir");
 
+
+
+    
 
     public static void main(String[] args) throws Exception {
     launch(args);
@@ -39,23 +52,28 @@ public class App extends Application{
 
     @Override
     public void start(Stage stage) throws Exception{  
+        
+        ///logica de ler o arquivo json sempre que abrir o app///
+
+
+
+
+        //Tela inicial
+
         stage.initStyle(StageStyle.UNDECORATED);
         
         stage.setTitle("Tela inicial");
 
         //Elementos da tela inicial 
-        Button botao = new Button("Nova Tarefa");
-        Button botaoVerListas = new Button("Ver Todas listas");
+        Button botaoCriarTarefa = new Button("Nova Tarefa");
+
         Button botaoVerTarefas = new Button("Ver todas Tarefas");
-        Button botaoCriarListas = new Button("Nova Lista");
         Button botaoFecharapp = new Button("x");    
         Button botaoMinimizaApp = new Button("-");
         
         //add os estilos nos botoes da tela inicial 
-        botao.getStyleClass().add("rounded-button");
-        botaoVerListas.getStyleClass().add("rounded-button");
-        botaoVerTarefas.getStyleClass().add("rounded-button");
-        botaoCriarListas.getStyleClass().add("rounded-button");
+        botaoCriarTarefa.getStyleClass().add("rounded-buttonPRINCIPAL");
+        botaoVerTarefas.getStyleClass().add("rounded-buttonPRINCIPAL");
 
 
         botaoMinimizaApp.setStyle("-fx-background-color: #422402; -fx-text-fill: white; -fx-font-size: 12px;");
@@ -73,23 +91,18 @@ public class App extends Application{
 
         //criando layout da tela inicial
         AnchorPane TelaInicial = new AnchorPane();
-        TelaInicial.getChildren().addAll(botao,botaoVerListas, botaoVerTarefas, botaoFecharapp, botaoMinimizaApp, botaoCriarListas); // add os elemetos na tela
+        TelaInicial.getChildren().addAll(botaoCriarTarefa, botaoVerTarefas, botaoFecharapp, botaoMinimizaApp); // add os elemetos na tela
         TelaInicial.setBackground(new Background(FundoDaTelaInicial));
         //POSIÇÂO DOS ELEMENTOS NA TELA INICIAL
-        AnchorPane.setTopAnchor(botao, 25.00);
-        AnchorPane.setLeftAnchor(botao, 105.00);
-        AnchorPane.setTopAnchor(botaoVerTarefas, 75.00);
-        AnchorPane.setLeftAnchor(botaoVerTarefas, 88.00);
-        AnchorPane.setTopAnchor(botaoCriarListas, 145.00);
-        AnchorPane.setLeftAnchor(botaoCriarListas, 105.00);
-        AnchorPane.setTopAnchor(botaoVerListas, 195.00);
-        AnchorPane.setLeftAnchor(botaoVerListas, 92.00);
+        AnchorPane.setTopAnchor(botaoCriarTarefa, 50.00);
+        AnchorPane.setLeftAnchor(botaoCriarTarefa, 85.00);
+        AnchorPane.setTopAnchor(botaoVerTarefas, 150.00);
+        AnchorPane.setLeftAnchor(botaoVerTarefas, 63.00);
         AnchorPane.setTopAnchor(botaoFecharapp, 5.00);
         AnchorPane.setLeftAnchor(botaoFecharapp, 265.00);
         AnchorPane.setTopAnchor(botaoMinimizaApp, 5.00);
         AnchorPane.setLeftAnchor(botaoMinimizaApp, 240.00);
         
-
         // cria a cena e configura o tamanho 
         Scene tela = new Scene(TelaInicial, 300,250);
         //vincula no arquivo CSS
@@ -100,8 +113,6 @@ public class App extends Application{
         //atribui a cena a tela 
         stage.setScene(tela);
         stage.show();
-
-
 
         //Criação da tela de Criação de tarefa
         Stage telaCriar = new Stage();
@@ -183,107 +194,13 @@ public class App extends Application{
         TelaCriacaoDeTarefa.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         
 
-        // tela de ver tarefas listadas
-        Stage TelaTarefas = new Stage();
-        ListView<String> listaTarefaPadrão = new ListView<>();
-        Button btnVoltar = new Button("Voltar");
-        // add items pra teste da interface
-        listaTarefaPadrão.getItems().addAll("Item 1", "Item 2", "Item 3", "Item 4", "Item 5","Item 5","Item 5","Item 5",
-        "Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5");
+        //Criação da tela de ver todas Tarefas 
 
-        //add estilo aos elementos
-        btnVoltar.getStyleClass().add("rounded-button");
-        listaTarefaPadrão.getStylesheets().add(getClass().getResource("listastyle.css").toExternalForm());
-        listaTarefaPadrão.setPrefSize(350, 340);
-
-        VBox vBox = new VBox();
-        vBox.getChildren().add(listaTarefaPadrão);
-        
-        vBox.setPrefSize(375, 340);
-
-        AnchorPane pnlTelaVerTarefas = new AnchorPane();
-        pnlTelaVerTarefas.getChildren().addAll(vBox, btnVoltar);
-
-        AnchorPane.setTopAnchor(btnVoltar, 350.00);
-        AnchorPane.setLeftAnchor(btnVoltar, 20.00);
-
-        Scene scene = new Scene(pnlTelaVerTarefas, 400, 400);
-        TelaTarefas.setScene(scene);
-
-        Image FundoDaTelaListagemdeTraefasIMAGE = new Image(getClass().getResourceAsStream("/imagens/telaListas.jpg"));
-        BackgroundImage FundoDaTelaListagemdeTarefas = new BackgroundImage(FundoDaTelaListagemdeTraefasIMAGE, 
-        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
-        BackgroundSize.DEFAULT);
-        pnlTelaVerTarefas.setBackground(new Background(FundoDaTelaListagemdeTarefas));
-        vBox.setBackground(new Background(FundoDaTelaListagemdeTarefas));
-        listaTarefaPadrão.setBackground(new Background(FundoDaTelaListagemdeTarefas));
-        pnlTelaVerTarefas.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
-
-
-        //tela criar lista
-        Stage CriaLista = new Stage();
-
-        CriaLista.initStyle(StageStyle.TRANSPARENT);
-
-        Image FundoDaTelaCriarListaIMAGE = new Image(getClass().getResourceAsStream("/imagens/FundoCriaLista.jpg"));
-        BackgroundImage FundoDaTelaCriarLista = new BackgroundImage(FundoDaTelaCriarListaIMAGE, 
-        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
-        BackgroundSize.DEFAULT);
-
-        Button salvarLista = new Button("Salvar");
-        Button voltarPraTelaInicial = new Button("Voltar");
-        Button prioridadeDaListaSIM = new Button("SIM");
-        Button prioridadeDaListaNAO = new Button("NÃO");
-        Label lblnomeDalista = new Label("Nome:");
-        Label lblprioridadeDaLista = new Label("Prioridade:");
-        TextField txtNomeLista = new TextField();
-
-        txtNomeLista.setStyle("-fx-text-fill: black; -fx-background-color: #c09f83;");
-        
-        salvarLista.getStyleClass().add("rounded-button");
-        voltarPraTelaInicial.getStyleClass().add("rounded-button");
-        prioridadeDaListaNAO.getStyleClass().add("rounded-button");
-        prioridadeDaListaSIM.getStyleClass().add("rounded-button");
-
-        AnchorPane TelaCriarLista = new AnchorPane();
-        TelaCriarLista.setBackground(new Background(FundoDaTelaCriar));
-        TelaCriarLista.getChildren().addAll(salvarLista, voltarPraTelaInicial, prioridadeDaListaSIM, 
-        prioridadeDaListaNAO, lblnomeDalista, lblprioridadeDaLista, txtNomeLista, line);
-
-        TelaCriarLista.setBackground(new Background(FundoDaTelaCriarLista));
-        AnchorPane.setTopAnchor(salvarLista, 180.00);
-        AnchorPane.setLeftAnchor(salvarLista, 200.00);
-
-        AnchorPane.setTopAnchor(voltarPraTelaInicial, 180.00);
-        AnchorPane.setLeftAnchor(voltarPraTelaInicial, 20.00);
-
-        AnchorPane.setTopAnchor(prioridadeDaListaSIM, 60.00);
-        AnchorPane.setLeftAnchor(prioridadeDaListaSIM, 80.00);
-
-        AnchorPane.setTopAnchor(prioridadeDaListaNAO, 60.00);
-        AnchorPane.setLeftAnchor(prioridadeDaListaNAO, 145.00);
-
-        AnchorPane.setTopAnchor(lblnomeDalista, 14.00);
-        AnchorPane.setLeftAnchor(lblnomeDalista, 10.00);
-
-        AnchorPane.setTopAnchor(lblprioridadeDaLista, 60.00);
-        AnchorPane.setLeftAnchor(lblprioridadeDaLista, 10.00);
-
-        AnchorPane.setTopAnchor(txtNomeLista, 10.00);
-        AnchorPane.setLeftAnchor(txtNomeLista, 55.00);
-
-        CriaLista.setScene(new Scene(TelaCriarLista,300, 250));
-        TelaCriarLista.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
-        //tela de ver todas listas 
-        Stage TelaListas = new Stage();
-        ListView<String> listasPadrão = new ListView<>();
+        Stage TelaListagemDeTarefas = new Stage();
+        ListView<Tarefa> listasPadrão = new ListView<>();
         Button btVoltar = new Button("Voltar");
         // add items pra teste da interface
-        listasPadrão.getItems().addAll("Item 1", "Item 2", "Item 3", "Item 4", "Item 5","Item 5","Item 5","Item 5",
-        "Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5","Item 5");
-
+        listasPadrão.getItems().add(new Tarefa("Rhuan", "Teste", true, false));
         //add estilo aos elementos
         btVoltar.getStyleClass().add("rounded-button");
         listasPadrão.getStylesheets().add(getClass().getResource("listastyle.css").toExternalForm());
@@ -301,30 +218,20 @@ public class App extends Application{
         AnchorPane.setLeftAnchor(btVoltar, 20.00);
 
         Scene cenaTelaverTarefas = new Scene(pnlTelaVerListas, 400, 400);
-        TelaListas.setScene(cenaTelaverTarefas);
+        TelaListagemDeTarefas.setScene(cenaTelaverTarefas);
 
-        Image FundoDaTelaListagemdeListasIMAGE = new Image(getClass().getResourceAsStream("/imagens/telaListas.jpg"));
-        BackgroundImage FundoDaTelaListagemdeListas = new BackgroundImage(FundoDaTelaListagemdeListasIMAGE, 
+        Image FundoDaTelaListagemdeTarefasIMAGE = new Image(getClass().getResourceAsStream("/imagens/telaListas.jpg"));
+        BackgroundImage FundoDaTelaListagemdeTarefas = new BackgroundImage(FundoDaTelaListagemdeTarefasIMAGE, 
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
         BackgroundSize.DEFAULT);
-        pnlTelaVerListas.setBackground(new Background(FundoDaTelaListagemdeListas));
+        pnlTelaVerListas.setBackground(new Background(FundoDaTelaListagemdeTarefas));
         vBoxListas.setBackground(new Background(FundoDaTelaListagemdeTarefas));
-        listasPadrão.setBackground(new Background(FundoDaTelaListagemdeListas));
+        listasPadrão.setBackground(new Background(FundoDaTelaListagemdeTarefas));
         pnlTelaVerListas.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
 
 
-/////////////////////////////////////////////Metodos dos Botões/////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        listaTarefaPadrão.setOnMouseClicked(event -> {
-            String selectedItem = listaTarefaPadrão.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-                // Aqui você pode abrir a tela desejada com base no item selecionado
-                //abrirTela(selectedItem);
-            }
-        });
-
+    //Metodos dos Botões
 
         //ação botao fechar app
         botaoFecharapp.setOnAction(new EventHandler<ActionEvent>() {
@@ -345,7 +252,7 @@ public class App extends Application{
 
 
         //ação do botao Criar Tarefa
-        botao.setOnAction(new EventHandler<ActionEvent>(){
+        botaoCriarTarefa.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event){
                 
@@ -354,36 +261,11 @@ public class App extends Application{
                 telaCriar.show();
         }
         });
-
-        botaoCriarListas.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event){
-                
-                //Fecha a tela inicial
-                stage.close();
-                CriaLista.show();
-        }
-        });
-
-        voltarPraTelaInicial.setOnAction(new EventHandler<ActionEvent>(){
-                @Override
-                public void handle(ActionEvent event){
-                    CriaLista.close();
-                    stage.show();
-                }
-            });
-        btnVoltar.setOnAction(new EventHandler<ActionEvent>(){
-                @Override
-                public void handle(ActionEvent event){
-                    TelaTarefas.close();
-                    stage.show();
-                }
-            });
             
             btVoltar.setOnAction(new EventHandler<ActionEvent>(){
                 @Override
                 public void handle(ActionEvent event){
-                    TelaListas.close();
+                    TelaListagemDeTarefas.close();
                     stage.show();
                 }
             });
@@ -410,7 +292,14 @@ public class App extends Application{
                 public void handle(ActionEvent event) {
                     // Cria uma nova tarefa com a prioridade configurada e a adiciona à lista
                     Tarefa t = new Tarefa(txtNome.getText(), txtDescricao.getText(), prioridade, false);
-                    lista.add(t);
+                   
+
+                        //logica de salvar no json (aqui acho que vai o metodo write do json)//////
+
+                    ObservableList<Tarefa> l = listasPadrão.getItems(); // ACHO QUE TEM Q APAGAR ISSO PRA SER FUNÇÃO DO JSON JOGAR NA TELA DE VER LISTA
+                    l.add(t); // ACHO QUE TEM Q APAGAR ISSO 
+
+
                     System.out.println(t.getNome()); 
                     System.out.println(t.getDescricao());
                     System.out.println(t.isPrioridade());
@@ -418,47 +307,94 @@ public class App extends Application{
             });
 
          //ação botao ver listas 
-        botaoVerTarefas.setOnAction(new EventHandler<ActionEvent>(){
+
+        
+
+        botaoVerTarefas.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event){
                 stage.close();
-                TelaTarefas.show();
+                TelaListagemDeTarefas.show();
             }
         });
 
-        prioridadeDaListaSIM.setOnAction(new EventHandler<ActionEvent>(){
+
+        //metodo remover tarefas
+
+        contextMenuTarefas.getItems().addAll(deletarItem);
+    
+            // Configurando o evento de menu de contexto para a ListView de Tarefas
+            listasPadrão.setOnContextMenuRequested((ContextMenuEvent event) -> {
+                contextMenuTarefas.show(listasPadrão, event.getScreenX(), event.getScreenY());
+            });
+            // Adicionando ações ao item do menu
+            deletarItem.setOnAction(event -> {
+                Tarefa selectedItem = listasPadrão.getSelectionModel().getSelectedItem();
+                System.out.println("Apagar: " + selectedItem.getNome());
+
+                // logica
+
+                
+                if (selectedItem != null) {
+                    int indiceAremover = -1;
+                        for (int i = 0; i < listasPadrão.getItems().size(); i++) {
+                                if (listasPadrão.getItems().get(i).equals(selectedItem)) {
+                                    indiceAremover = i;
+                                        break;
+                                }   
+                            }
+                        if (indiceAremover != -1) {
+                            listasPadrão.getItems().remove(indiceAremover);
+                        }
+                }
+            });
+
+            listasPadrão.setCellFactory(param -> new ListCell<Tarefa>() {
             @Override
-            public void handle(ActionEvent event){
-                prioridadeLista = true;
-                System.out.println(prioridadeLista);
+            protected void updateItem(Tarefa tarefa, boolean vazio) {
+                super.updateItem(tarefa, vazio);
+                if (vazio || tarefa == null) {
+                    setText(null);
+                } else {
+                    setText(tarefa.getNome());
+                }
             }
         });
-        salvarLista.setOnAction(new EventHandler<ActionEvent>(){
+
+        listasPadrão.setCellFactory(CheckBoxListCell.forListView(Tarefa::statusProperty));
+
+
+        // Adicionando um Tooltip para a mensagem "Concluída"
+        listasPadrão.setCellFactory(param -> new ListCell<Tarefa>() {
+            private final CheckBox checkBox = new CheckBox();
+
+            
             @Override
-            public void handle(ActionEvent event){
-                ListadeTarefas l = new ListadeTarefas(txtNomeLista.getText(), prioridadeLista);
-                visualizacao.add(l);
-                System.out.println(visualizacao.size());
-                System.out.println(l.isPrioridade());
+            protected void updateItem(Tarefa item, boolean vazio) {
+                super.updateItem(item, vazio);
+                if (vazio || item == null) {
+                    setGraphic(null);
+                } else {
+                    checkBox.setSelected(item.isStatus());
+                    checkBox.setText(item.getNome());
+
+                    checkBox.setOnAction(event -> item.setStatus(checkBox.isSelected()));
+
+                    setGraphic(checkBox);
+                    // Adicionando Tooltip apenas se a tarefa estiver concluída
+                    if (item.isStatus()) {
+                        Tooltip tooltip = new Tooltip("Concluída");
+                        setTooltip(tooltip);
+                    }
+                    else{
+                        Tooltip tooltip = new Tooltip("Não concluida");
+                        setTooltip(tooltip);
+                    }
+                }
             }
         });
-
-        botaoVerListas.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event){
-                stage.close();
-                TelaListas.show();
-            }
-        });
-
-
     }
-    // private void abrirTarefa(Tarefa item) {
-    //     // Implemente a lógica para abrir a tela com base no item clicado
-    //     // Por exemplo, você pode abrir uma nova janela, trocar de cena, etc.
-    //     System.out.println("Você clicou em: " + item);
-    //     // Insira aqui a lógica para abrir a tela desejada
-    // }
-
-
 }
+
+
+

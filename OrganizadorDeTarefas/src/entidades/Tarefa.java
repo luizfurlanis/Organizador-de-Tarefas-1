@@ -1,11 +1,14 @@
 package entidades;
 
+import javafx.beans.property.SimpleBooleanProperty;
+
 public class Tarefa {
     private String nome;
     private String descricao;
     private boolean prioridade;
     private boolean status;
     public char[] getNome;
+    private SimpleBooleanProperty statuss;
     
     public Tarefa(String nome, String descricao, boolean prioridade, boolean status) {
         this.nome = nome;
@@ -45,4 +48,7 @@ public class Tarefa {
     public Object descricaoProperty() {
         return null;
     }
+     public SimpleBooleanProperty statusProperty() {
+            return statuss;
+        }
 }
