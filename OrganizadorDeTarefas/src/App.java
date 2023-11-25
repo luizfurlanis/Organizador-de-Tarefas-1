@@ -1,9 +1,20 @@
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import entidades.ListadeTarefas;
 import entidades.Tarefa;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -28,6 +39,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.control.CheckBox;
@@ -36,17 +48,20 @@ public class App extends Application{
     //private static Stage stage = null;
     private ArrayList<Tarefa> lista = new ArrayList<>();
     private boolean prioridade = false; 
-    private boolean prioridadeLista = false;
-    private ArrayList<ListadeTarefas> visualizacao = new ArrayList<>();
+
     ContextMenu contextMenuTarefas = new ContextMenu();
     MenuItem deletarItem = new MenuItem("Excluir");
-
+    private ListView<Tarefa> listasPadrão = new ListView<>();
 
 
     
 
     public static void main(String[] args) throws Exception {
-    launch(args);
+        try {
+            launch(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     
     }
 
@@ -55,7 +70,12 @@ public class App extends Application{
         
         ///logica de ler o arquivo json sempre que abrir o app///
 
-
+        // Verifica se o arquivo JSON existe
+        java.nio.file.Path path = Paths.get("C:\\Users\\Usuário\\OneDrive\\Documentos\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json");
+        if (Files.exists(path)) {
+            // Se o arquivo existe, lê as tarefas do JSON
+            lerTarefasDoJson();
+        }
 
 
         //Tela inicial
@@ -197,10 +217,9 @@ public class App extends Application{
         //Criação da tela de ver todas Tarefas 
 
         Stage TelaListagemDeTarefas = new Stage();
-        ListView<Tarefa> listasPadrão = new ListView<>();
+        
+        listasPadrão.getItems().addAll(lista);
         Button btVoltar = new Button("Voltar");
-        // add items pra teste da interface
-        listasPadrão.getItems().add(new Tarefa("Rhuan", "Teste", true, false));
         //add estilo aos elementos
         btVoltar.getStyleClass().add("rounded-button");
         listasPadrão.getStylesheets().add(getClass().getResource("listastyle.css").toExternalForm());
@@ -231,7 +250,7 @@ public class App extends Application{
 
 
 
-    //Metodos dos Botões
+        //Metodos dos Botões
 
         //ação botao fechar app
         botaoFecharapp.setOnAction(new EventHandler<ActionEvent>() {
@@ -261,8 +280,7 @@ public class App extends Application{
                 telaCriar.show();
         }
         });
-            
-            btVoltar.setOnAction(new EventHandler<ActionEvent>(){
+        btVoltar.setOnAction(new EventHandler<ActionEvent>(){
                 @Override
                 public void handle(ActionEvent event){
                     TelaListagemDeTarefas.close();
@@ -290,20 +308,18 @@ public class App extends Application{
             btnSalvar.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    // Cria uma nova tarefa com a prioridade configurada e a adiciona à lista
                     Tarefa t = new Tarefa(txtNome.getText(), txtDescricao.getText(), prioridade, false);
-                   
 
-                        //logica de salvar no json (aqui acho que vai o metodo write do json)//////
+                lista.add(t); // Adiciona à lista
+                salvarTarefasNoJson(); // Salva a lista no JSON
 
-                    ObservableList<Tarefa> l = listasPadrão.getItems(); // ACHO QUE TEM Q APAGAR ISSO PRA SER FUNÇÃO DO JSON JOGAR NA TELA DE VER LISTA
-                    l.add(t); // ACHO QUE TEM Q APAGAR ISSO 
+                // Adiciona à ListView
+                listasPadrão.getItems().add(t);
 
-
-                    System.out.println(t.getNome()); 
-                    System.out.println(t.getDescricao());
-                    System.out.println(t.isPrioridade());
-                }
+                System.out.println(t.getNome());
+                System.out.println(t.getDescricao());
+                System.out.println(t.isPrioridade());
+            }
             });
 
          //ação botao ver listas 
@@ -331,21 +347,12 @@ public class App extends Application{
             deletarItem.setOnAction(event -> {
                 Tarefa selectedItem = listasPadrão.getSelectionModel().getSelectedItem();
                 System.out.println("Apagar: " + selectedItem.getNome());
-
-                // logica
-
-                
+    
+                // Remover a tarefa da lista
                 if (selectedItem != null) {
-                    int indiceAremover = -1;
-                        for (int i = 0; i < listasPadrão.getItems().size(); i++) {
-                                if (listasPadrão.getItems().get(i).equals(selectedItem)) {
-                                    indiceAremover = i;
-                                        break;
-                                }   
-                            }
-                        if (indiceAremover != -1) {
-                            listasPadrão.getItems().remove(indiceAremover);
-                        }
+                    lista.remove(selectedItem);
+                    salvarTarefasNoJson(); // Salvar a lista atualizada no JSON
+                    listasPadrão.getItems().remove(selectedItem);
                 }
             });
 
@@ -361,14 +368,9 @@ public class App extends Application{
             }
         });
 
-        listasPadrão.setCellFactory(CheckBoxListCell.forListView(Tarefa::statusProperty));
-
-
-        // Adicionando um Tooltip para a mensagem "Concluída"
         listasPadrão.setCellFactory(param -> new ListCell<Tarefa>() {
             private final CheckBox checkBox = new CheckBox();
-
-            
+        
             @Override
             protected void updateItem(Tarefa item, boolean vazio) {
                 super.updateItem(item, vazio);
@@ -377,23 +379,64 @@ public class App extends Application{
                 } else {
                     checkBox.setSelected(item.isStatus());
                     checkBox.setText(item.getNome());
-
-                    checkBox.setOnAction(event -> item.setStatus(checkBox.isSelected()));
-
+        
+                    // Atualizar o atributo status ao clicar na CheckBox
+                    checkBox.setOnAction(event -> {
+                        item.setStatus(checkBox.isSelected());
+                        salvarTarefasNoJson(); // Salvar a lista atualizada no JSON
+                    });
+        
                     setGraphic(checkBox);
-                    // Adicionando Tooltip apenas se a tarefa estiver concluída
-                    if (item.isStatus()) {
-                        Tooltip tooltip = new Tooltip("Concluída");
-                        setTooltip(tooltip);
-                    }
-                    else{
-                        Tooltip tooltip = new Tooltip("Não concluida");
-                        setTooltip(tooltip);
-                    }
+        
+                    // Adicionar Tooltip para indicar se a tarefa está concluída ou não
+                    Tooltip tooltip = new Tooltip(item.isStatus() ? "Concluída" : "Não concluída");
+                    setTooltip(tooltip);
                 }
             }
         });
+        
     }
+private void lerTarefasDoJson() {
+    try {
+        Gson gson = new Gson();
+
+        // Lê o arquivo JSON e converte para uma lista de Tarefas
+        List<Tarefa> tarefas = gson.fromJson(
+                new FileReader("C:\\Users\\Usuário\\OneDrive\\Documentos\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json"),
+                new TypeToken<List<Tarefa>>() {}.getType());
+
+          // Limpa a ListView antes de adicionar os itens
+        listasPadrão.getItems().clear();
+        
+          // Adiciona as tarefas lidas à lista, garantindo que não haja duplicatas
+        for (Tarefa tarefa : tarefas) {
+            if (!lista.contains(tarefa)) {
+                lista.add(tarefa);
+            }
+        }
+
+        // Use FXCollections.observableArrayList para criar uma coleção observável
+        ObservableList<Tarefa> tarefasObservable = FXCollections.observableArrayList(tarefas);
+
+        // Adiciona as tarefas lidas à ListView
+        listasPadrão.getItems().addAll(tarefasObservable);
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    }
+    }
+
+private void salvarTarefasNoJson() {
+    try (FileWriter writer = new FileWriter(
+                "C:\\Users\\Usuário\\OneDrive\\Documentos\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json")) {
+            Gson gson = new Gson();
+            gson.toJson(lista, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    
 }
 
 

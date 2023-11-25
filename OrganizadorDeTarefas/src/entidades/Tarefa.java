@@ -51,4 +51,9 @@ public class Tarefa {
      public SimpleBooleanProperty statusProperty() {
             return statuss;
         }
+        @Override
+    public String toString() {
+        return nome;
+    }
 }
+

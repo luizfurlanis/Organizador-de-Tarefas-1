@@ -2,6 +2,7 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "c:\\Users\\Usuário\\OneDrive\\Área de Trabalho\\json-simple-1.1.1.jar",
-        "c:\\Users\\Usuário\\OneDrive\\Área de Trabalho\\jackson-databind-2.16.0.jar"
+        "c:\\Users\\Usuário\\OneDrive\\Área de Trabalho\\jackson-databind-2.16.0.jar",
+        "c:\\Users\\Usuário\\OneDrive\\Área de Trabalho\\gson-2.10.1.jar"
     ]
 }
