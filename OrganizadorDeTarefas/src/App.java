@@ -79,14 +79,11 @@ public class App extends Application{
 
 
         //Tela inicial
-
         stage.initStyle(StageStyle.UNDECORATED);
         
         stage.setTitle("Tela inicial");
-
         //Elementos da tela inicial 
         Button botaoCriarTarefa = new Button("Nova Tarefa");
-
         Button botaoVerTarefas = new Button("Ver todas Tarefas");
         Button botaoFecharapp = new Button("x");    
         Button botaoMinimizaApp = new Button("-");
@@ -94,12 +91,9 @@ public class App extends Application{
         //add os estilos nos botoes da tela inicial 
         botaoCriarTarefa.getStyleClass().add("rounded-buttonPRINCIPAL");
         botaoVerTarefas.getStyleClass().add("rounded-buttonPRINCIPAL");
-
-
         botaoMinimizaApp.setStyle("-fx-background-color: #422402; -fx-text-fill: white; -fx-font-size: 12px;");
         botaoMinimizaApp.setOnMouseEntered(e -> botaoMinimizaApp.setStyle("-fx-background-color: #c44800; -fx-text-fill: white; -fx-font-size: 12px;"));
         botaoMinimizaApp.setOnMouseExited(e -> botaoMinimizaApp.setStyle("-fx-background-color: #422402; -fx-text-fill: white; -fx-font-size: 12px;"));
-
         botaoFecharapp.setStyle("-fx-background-color: #422402; -fx-text-fill: white; -fx-font-size: 12px;");
         botaoFecharapp.setOnMouseEntered(e -> botaoFecharapp.setStyle("-fx-background-color: #ff0000; -fx-text-fill: white; -fx-font-size: 12px;"));
         botaoFecharapp.setOnMouseExited(e -> botaoFecharapp.setStyle("-fx-background-color: #422402; -fx-text-fill: white; -fx-font-size: 12px;"));
@@ -108,7 +102,6 @@ public class App extends Application{
         BackgroundImage FundoDaTelaInicial = new BackgroundImage(FundoDaTelaInicialIMAGE, 
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
         BackgroundSize.DEFAULT);
-
         //criando layout da tela inicial
         AnchorPane TelaInicial = new AnchorPane();
         TelaInicial.getChildren().addAll(botaoCriarTarefa, botaoVerTarefas, botaoFecharapp, botaoMinimizaApp); // add os elemetos na tela
@@ -158,7 +151,7 @@ public class App extends Application{
         txtDescricao.setWrapText(true);
         txtDescricao.setStyle("-fx-text-fill: black; -fx-background-color: #c09f83;");
         txtNome.setStyle("-fx-text-fill: black; -fx-background-color: #c09f83;");
-            
+        
         Line line = new Line(55, 33, 203, 33); 
         line.setStyle("-fx-stroke: #301b03;"); // Cor da linha
 
@@ -210,6 +203,8 @@ public class App extends Application{
 
         //cria uma cena pra tela 
         telaCriar.setScene(new Scene(TelaCriacaoDeTarefa, 600, 320));
+
+        
         //add estilo na cena
         TelaCriacaoDeTarefa.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         
@@ -217,7 +212,8 @@ public class App extends Application{
         //Criação da tela de ver todas Tarefas 
 
         Stage TelaListagemDeTarefas = new Stage();
-        
+                TelaListagemDeTarefas.initStyle(StageStyle.UNDECORATED);
+
         listasPadrão.getItems().addAll(lista);
         Button btVoltar = new Button("Voltar");
         //add estilo aos elementos
@@ -368,6 +364,16 @@ public class App extends Application{
             }
         });
 
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(javafx.util.Duration.seconds(5));
+
+        // listasPadrão.setOnMouseEntered(event -> {
+        //     Tarefa tarefaSelecionada = listasPadrão.getSelectionModel().getSelectedItem();
+        //     if (tarefaSelecionada != null) {
+        //         tooltip.setText(tarefaSelecionada.getDescricao()); // Define o texto do Tooltip como a descrição da tarefa
+        //     }
+        // });
+
         listasPadrão.setCellFactory(param -> new ListCell<Tarefa>() {
             private final CheckBox checkBox = new CheckBox();
         
@@ -389,11 +395,12 @@ public class App extends Application{
                     setGraphic(checkBox);
         
                     // Adicionar Tooltip para indicar se a tarefa está concluída ou não
-                    Tooltip tooltip = new Tooltip(item.isStatus() ? "Concluída" : "Não concluída");
+                    Tooltip tooltip = new Tooltip(item.getDescricao());
                     setTooltip(tooltip);
                 }
             }
         });
+        
         
     }
 private void lerTarefasDoJson() {
@@ -407,7 +414,7 @@ private void lerTarefasDoJson() {
 
           // Limpa a ListView antes de adicionar os itens
         listasPadrão.getItems().clear();
-        
+
           // Adiciona as tarefas lidas à lista, garantindo que não haja duplicatas
         for (Tarefa tarefa : tarefas) {
             if (!lista.contains(tarefa)) {
