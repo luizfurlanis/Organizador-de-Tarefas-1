@@ -11,7 +11,6 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import entidades.ListadeTarefas;
 import entidades.Tarefa;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -28,7 +27,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
@@ -38,8 +36,6 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.control.CheckBox;
@@ -68,10 +64,10 @@ public class App extends Application{
     @Override
     public void start(Stage stage) throws Exception{  
         
-        ///logica de ler o arquivo json sempre que abrir o app///
+        //logica de ler o arquivo json sempre que abrir o app//
 
         // Verifica se o arquivo JSON existe
-        java.nio.file.Path path = Paths.get("C:\\Users\\Usuário\\OneDrive\\Documentos\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json");
+        java.nio.file.Path path = Paths.get("C:\\Users\\furla\\Documents\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json");
         if (Files.exists(path)) {
             // Se o arquivo existe, lê as tarefas do JSON
             lerTarefasDoJson();
@@ -123,7 +119,7 @@ public class App extends Application{
 
         // proibe o usuario mudar o tamanho da janela 
         stage.resizableProperty().setValue(Boolean.FALSE);;
-        //atribui a cena a tela 
+        //atribui uma tela pra cena
         stage.setScene(tela);
         stage.show();
 
@@ -140,8 +136,7 @@ public class App extends Application{
                 
         Button btnSalvar = new Button("Salvar");
         Button btnVoltarTelaInicial = new Button("Voltar");
-        Button btnPrioridadeSIM = new Button("SIM");
-        Button btnPrioridadeNAO = new Button("NÃO");
+        Button btnPrioridadeSIM = new Button("Ativar");
         Label lblNome = new Label("Nome:");
         Label lblDescricao = new Label("Descrição:");
         Label lblPrioridade = new Label("Prioridade:");
@@ -152,14 +147,11 @@ public class App extends Application{
         txtDescricao.setStyle("-fx-text-fill: black; -fx-background-color: #c09f83;");
         txtNome.setStyle("-fx-text-fill: black; -fx-background-color: #c09f83;");
         
-        Line line = new Line(55, 33, 203, 33); 
-        line.setStyle("-fx-stroke: #301b03;"); // Cor da linha
-
+        txtDescricao.setMaxSize(400,160);
         // add estilo ao elementos da tela de criação
         btnSalvar.getStyleClass().add("rounded-button");
         btnVoltarTelaInicial.getStyleClass().add("rounded-button");
         btnPrioridadeSIM.getStyleClass().add("rounded-button");
-        btnPrioridadeNAO.getStyleClass().add("rounded-button");
         //muda cor das label
         //lblNome.setStyle("-fx-text-fill: #301b03");
         lblNome.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #301b03;");
@@ -171,8 +163,8 @@ public class App extends Application{
         TelaCriacaoDeTarefa.setBackground(new Background(FundoDaTelaCriar));
         //TelaCriacaoDeTarefa.setStyle("-fx-background-color: #c09f83;");
         //add elementos na tela
-        TelaCriacaoDeTarefa.getChildren().addAll(btnSalvar,btnVoltarTelaInicial , btnPrioridadeSIM, btnPrioridadeNAO, lblNome,
-        lblDescricao, lblPrioridade, txtNome, txtDescricao, line);
+        TelaCriacaoDeTarefa.getChildren().addAll(btnSalvar,btnVoltarTelaInicial , btnPrioridadeSIM, lblNome,
+        lblDescricao, lblPrioridade, txtNome, txtDescricao);
 
         AnchorPane.setTopAnchor(btnSalvar, 230.00);
         AnchorPane.setLeftAnchor(btnSalvar, 450.00);
@@ -180,11 +172,8 @@ public class App extends Application{
         AnchorPane.setTopAnchor(btnVoltarTelaInicial, 270.00);
         AnchorPane.setLeftAnchor(btnVoltarTelaInicial, 20.00);
 
-        AnchorPane.setTopAnchor(btnPrioridadeSIM, 230.00);
+        AnchorPane.setTopAnchor(btnPrioridadeSIM, 220.00);
         AnchorPane.setLeftAnchor(btnPrioridadeSIM, 105.00);
-
-        AnchorPane.setTopAnchor(btnPrioridadeNAO, 230.00);
-        AnchorPane.setLeftAnchor(btnPrioridadeNAO, 170.00);
 
         AnchorPane.setTopAnchor(lblNome, 14.00);
         AnchorPane.setLeftAnchor(lblNome, 10.00);
@@ -192,13 +181,13 @@ public class App extends Application{
         AnchorPane.setTopAnchor(lblDescricao, 45.00);
         AnchorPane.setLeftAnchor(lblDescricao, 10.00);
 
-        AnchorPane.setTopAnchor(lblPrioridade, 224.00);
+        AnchorPane.setTopAnchor(lblPrioridade, 227.00);
         AnchorPane.setLeftAnchor(lblPrioridade, 10.00);
 
         AnchorPane.setTopAnchor(txtNome, 10.00);
         AnchorPane.setLeftAnchor(txtNome, 55.00);
 
-        AnchorPane.setTopAnchor(txtDescricao, 40.00);
+        AnchorPane.setTopAnchor(txtDescricao,50.00);
         AnchorPane.setLeftAnchor(txtDescricao, 85.00);
 
         //cria uma cena pra tela 
@@ -212,7 +201,7 @@ public class App extends Application{
         //Criação da tela de ver todas Tarefas 
 
         Stage TelaListagemDeTarefas = new Stage();
-                TelaListagemDeTarefas.initStyle(StageStyle.UNDECORATED);
+        TelaListagemDeTarefas.initStyle(StageStyle.UNDECORATED);
 
         listasPadrão.getItems().addAll(lista);
         Button btVoltar = new Button("Voltar");
@@ -311,7 +300,8 @@ public class App extends Application{
 
                 // Adiciona à ListView
                 listasPadrão.getItems().add(t);
-
+                txtNome.clear();
+                txtDescricao.clear();
                 System.out.println(t.getNome());
                 System.out.println(t.getDescricao());
                 System.out.println(t.isPrioridade());
@@ -341,17 +331,18 @@ public class App extends Application{
             });
             // Adicionando ações ao item do menu
             deletarItem.setOnAction(event -> {
-                Tarefa selectedItem = listasPadrão.getSelectionModel().getSelectedItem();
+                Tarefa selectedItem = listasPadrão.getSelectionModel().getSelectedItem(); // verifica a linha do item selecionado na listview para poder realizar ações com ele no saco pega o item selecionado e deleta
                 System.out.println("Apagar: " + selectedItem.getNome());
     
                 // Remover a tarefa da lista
                 if (selectedItem != null) {
-                    lista.remove(selectedItem);
+                    lista.remove(selectedItem);//remove da lista de suporte
                     salvarTarefasNoJson(); // Salvar a lista atualizada no JSON
-                    listasPadrão.getItems().remove(selectedItem);
+                    listasPadrão.getItems().remove(selectedItem);//apaga da list view
                 }
             });
 
+            //configuração para aparecer somente o nome da tarefa na listview
             listasPadrão.setCellFactory(param -> new ListCell<Tarefa>() {
             @Override
             protected void updateItem(Tarefa tarefa, boolean vazio) {
@@ -364,16 +355,7 @@ public class App extends Application{
             }
         });
 
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShowDelay(javafx.util.Duration.seconds(5));
-
-        // listasPadrão.setOnMouseEntered(event -> {
-        //     Tarefa tarefaSelecionada = listasPadrão.getSelectionModel().getSelectedItem();
-        //     if (tarefaSelecionada != null) {
-        //         tooltip.setText(tarefaSelecionada.getDescricao()); // Define o texto do Tooltip como a descrição da tarefa
-        //     }
-        // });
-
+        //configuração do check box
         listasPadrão.setCellFactory(param -> new ListCell<Tarefa>() {
             private final CheckBox checkBox = new CheckBox();
         
@@ -403,26 +385,26 @@ public class App extends Application{
         
         
     }
-private void lerTarefasDoJson() {
-    try {
+    private void lerTarefasDoJson() {
+        try {
         Gson gson = new Gson();
 
-        // Lê o arquivo JSON e converte para uma lista de Tarefas
+        // Lê o arquivo JSON e converte pra lista de Tarefas
         List<Tarefa> tarefas = gson.fromJson(
-                new FileReader("C:\\Users\\Usuário\\OneDrive\\Documentos\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json"),
+                new FileReader("C:\\Users\\furla\\Documents\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json"),
                 new TypeToken<List<Tarefa>>() {}.getType());
 
           // Limpa a ListView antes de adicionar os itens
         listasPadrão.getItems().clear();
 
-          // Adiciona as tarefas lidas à lista, garantindo que não haja duplicatas
+          // Adiciona as tarefas lidas na lista, sem duplicar
         for (Tarefa tarefa : tarefas) {
             if (!lista.contains(tarefa)) {
                 lista.add(tarefa);
             }
         }
 
-        // Use FXCollections.observableArrayList para criar uma coleção observável
+        //cria uma coleção observável, necessaria para adicionar depois na listview(serve de ponte pq o metodo nao exixte para objetos do tipo listview)
         ObservableList<Tarefa> tarefasObservable = FXCollections.observableArrayList(tarefas);
 
         // Adiciona as tarefas lidas à ListView
@@ -432,9 +414,10 @@ private void lerTarefasDoJson() {
     }
     }
 
-private void salvarTarefasNoJson() {
-    try (FileWriter writer = new FileWriter(
-                "C:\\Users\\Usuário\\OneDrive\\Documentos\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json")) {
+    //metodo para salvar as tarefas no json
+    private void salvarTarefasNoJson() {
+        try (FileWriter writer = new FileWriter(
+                    "C:\\Users\\furla\\Documents\\GitHub\\Organizador-de-Tarefas\\OrganizadorDeTarefas\\src\\testes\\dados.json")) {
             Gson gson = new Gson();
             gson.toJson(lista, writer);
         } catch (IOException e) {
